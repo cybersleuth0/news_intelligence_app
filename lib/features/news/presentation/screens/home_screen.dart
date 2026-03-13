@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shimmer/shimmer.dart';
 import 'dart:ui';
-import '../../data/models/article_model.dart';
 import '../providers/news_provider.dart';
 import 'article_detail_screen.dart';
 import 'search_screen.dart';
@@ -53,7 +52,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final selectedCategory = ref.watch(categoryProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    // Stitch Colors (From HTML Tailwind config)
     const primaryColor = Color(0xFF3713EC);
     final bgColor = isDark ? const Color(0xFF131022) : const Color(0xFFF6F6F8);
     final bgHeaderColor = isDark ? const Color(0xFF131022).withValues(alpha: 0.8) : const Color(0xFFF6F6F8).withValues(alpha: 0.8);
@@ -290,7 +288,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   itemCount: 5,
                   itemBuilder: (context, index) => _buildShimmerLoading(isDark),
                 ),
-                error: (error, stack) => Center(child: Text('Error: $error')),
+                error: (error, stack) => _buildErrorState(error.toString(), primaryColor, textColor, mutedTextColor),
               ),
             ),
           ),
@@ -328,39 +326,74 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               label: 'Profile',
             ),
           ],
-          onTap: (index) {
+          onTap: (index) async {
+            if (index == 0) return;
+            
             setState(() {
               _selectedIndex = index;
             });
+
+            Widget targetScreen;
             if (index == 1) {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const SearchScreen(),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                ),
-              );
+              targetScreen = const SearchScreen();
             } else if (index == 2) {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const FavoritesScreen(),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                ),
-              );
-            } else if (index == 3) {
-              Navigator.of(context).push(
-                PageRouteBuilder(
-                  pageBuilder: (context, animation, secondaryAnimation) => const ProfileScreen(),
-                  transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                    return FadeTransition(opacity: animation, child: child);
-                  },
-                ),
-              );
+              targetScreen = const FavoritesScreen();
+            } else {
+              targetScreen = const ProfileScreen();
+            }
+
+            await Navigator.of(context).push(
+              PageRouteBuilder(
+                pageBuilder: (context, animation, secondaryAnimation) => targetScreen,
+                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                  return FadeTransition(opacity: animation, child: child);
+                },
+              ),
+            );
+
+            // Reset back to Home index when returning
+            if (mounted) {
+              setState(() {
+                _selectedIndex = 0;
+              });
             }
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message, Color primaryColor, Color textColor, Color mutedTextColor) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.wifi_off_rounded, size: 64, color: mutedTextColor.withValues(alpha: 0.5)),
+            const SizedBox(height: 24),
+            Text(
+              'Connection Error',
+              style: TextStyle(color: textColor, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              message.contains('No Internet') ? 'Please check your internet connection and try again.' : message,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: mutedTextColor, fontSize: 14),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: () => ref.read(newsFeedProvider.notifier).refresh(),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: primaryColor,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: const Text('Retry'),
+            ),
+          ],
         ),
       ),
     );

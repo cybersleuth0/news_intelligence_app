@@ -9,7 +9,6 @@ class AuthRepository {
   }
 
   Future<void> login(String email, String password) async {
-    // Simple mock login for assignment
     await _authBox.put('isLoggedIn', true);
     await _authBox.put('email', email);
   }

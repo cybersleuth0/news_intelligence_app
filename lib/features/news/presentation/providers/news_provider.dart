@@ -41,7 +41,7 @@ class NewsFeedNotifier extends AsyncNotifier<List<ArticleModel>> {
         _currentPage = nextPage;
         state = AsyncData([...state.value ?? [], ...moreNews]);
       }
-    } catch (e, stack) {
+    } catch (e) {
       // Don't change state to error to keep showing existing items, 
       // maybe use a separate state for pagination error if needed.
     }

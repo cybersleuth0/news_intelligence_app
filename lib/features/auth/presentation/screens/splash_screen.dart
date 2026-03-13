@@ -51,13 +51,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    // Stitch Colors (From HTML Tailwind config)
     const primaryColor = Color(0xFF3713EC); 
     final bgColor = isDark ? const Color(0xFF131022) : const Color(0xFFF6F6F8);
     final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A);
     final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
     
-    // Abstract Background Colors (From HTML abstract background pattern)
     final blob1Color = primaryColor.withValues(alpha: 0.05);
     final blob2Color = primaryColor.withValues(alpha: 0.1);
 
@@ -140,7 +138,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                     color: subtitleColor,
-                    letterSpacing: 2.0, // tracking-widest
+                    letterSpacing: 2.0,
                   ),
                 ),
               ],

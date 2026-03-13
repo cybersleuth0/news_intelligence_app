@@ -2,11 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/article_model.dart';
 import 'news_provider.dart';
 
-final searchProvider = AsyncNotifierProvider<SearchNotifier, List<ArticleModel>>(() {
-  return SearchNotifier();
-});
+final searchProvider = AutoDisposeAsyncNotifierProvider<SearchNotifier, List<ArticleModel>>(SearchNotifier.new);
 
-class SearchNotifier extends AsyncNotifier<List<ArticleModel>> {
+class SearchNotifier extends AutoDisposeAsyncNotifier<List<ArticleModel>> {
   @override
   Future<List<ArticleModel>> build() async {
     return []; // Start with an empty list

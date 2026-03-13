@@ -11,7 +11,6 @@ class FavoritesScreen extends ConsumerWidget {
     final favorites = ref.watch(favoritesProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    // Stitch Colors (From HTML Tailwind config)
     const primaryColor = Color(0xFF3713EC);
     final bgColor = isDark ? const Color(0xFF131022) : const Color(0xFFF6F6F8);
     final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A);

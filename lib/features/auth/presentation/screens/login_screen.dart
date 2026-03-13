@@ -48,20 +48,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    // Stitch Colors (From HTML Tailwind config)
     const primaryColor = Color(0xFF3713EC); 
     final bgColor = isDark ? const Color(0xFF131022) : const Color(0xFFF6F6F8);
-    final cardBgColor = isDark ? const Color(0xFF0F172A).withValues(alpha: 0.5) : Colors.white; // dark:bg-slate-900/50
-    final borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0); // dark:border-slate-800
-    final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A); // dark:text-slate-100
-    final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569); // dark:text-slate-400
-    final inputBgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC); // dark:bg-slate-900
+    final cardBgColor = isDark ? const Color(0xFF0F172A).withValues(alpha: 0.5) : Colors.white;
+    final borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
+    final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A);
+    final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
+    final inputBgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
     final linkColor = isDark ? primaryColor : primaryColor;
     
-    // Abstract Background Colors (From HTML abstract background pattern)
-    // <div class="absolute top-[-10%] ... bg-primary/20 blur-[120px] rounded-full"></div>
     final blob1Color = primaryColor.withValues(alpha: 0.2); 
-    // <div class="absolute bottom-[-10%] ... bg-primary/10 blur-[120px] rounded-full"></div>
     final blob2Color = primaryColor.withValues(alpha: 0.1); 
 
     return Scaffold(
@@ -134,7 +130,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           height: 64,
                           decoration: BoxDecoration(
                             color: primaryColor.withValues(alpha: 0.2),
-                            borderRadius: BorderRadius.circular(12), // rounded-xl
+                            borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Center(
                             child: Icon(
@@ -144,17 +140,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24), // mb-6
+                        const SizedBox(height: 24),
                         Text(
                           'NewsIQ',
                           style: TextStyle(
-                            fontSize: 30, // text-3xl
+                            fontSize: 30,
                             fontWeight: FontWeight.bold,
                             color: textColor,
-                            letterSpacing: -0.5, // tracking-tight
+                            letterSpacing: -0.5,
                           ),
                         ),
-                        const SizedBox(height: 8), // mt-2
+                        const SizedBox(height: 8),
                         Text(
                           'Access institutional-grade market intelligence',
                           textAlign: TextAlign.center,
@@ -165,19 +161,19 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 32), // space-y-8
+                    const SizedBox(height: 32),
                     
                     // Login Form Card
                     Container(
-                      padding: const EdgeInsets.all(32), // p-8
+                      padding: const EdgeInsets.all(32),
                       decoration: BoxDecoration(
                         color: cardBgColor,
-                        borderRadius: BorderRadius.circular(12), // rounded-xl
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: borderColor),
                         boxShadow: [
                           BoxShadow(
                             color: Colors.black.withValues(alpha: 0.05),
-                            blurRadius: 20, // shadow-xl approx
+                            blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
                         ],
@@ -189,12 +185,12 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           Text(
                             'Work Email',
                             style: TextStyle(
-                              fontSize: 14, // text-sm
-                              fontWeight: FontWeight.w500, // font-medium
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500,
                               color: isDark ? const Color(0xFFCBD5E1) : const Color(0xFF334155),
                             ),
                           ),
-                          const SizedBox(height: 8), // mb-2
+                          const SizedBox(height: 8),
                           TextField(
                             controller: _emailController,
                             keyboardType: TextInputType.emailAddress,
@@ -207,7 +203,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               prefixIcon: const Icon(Icons.mail_outline, color: Color(0xFF94A3B8)),
                               contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(8), // rounded-lg
+                                borderRadius: BorderRadius.circular(8),
                                 borderSide: BorderSide(color: borderColor),
                               ),
                               enabledBorder: OutlineInputBorder(
@@ -216,11 +212,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: primaryColor, width: 2), // ring-2 ring-primary/50 equivalent visual focus effect...
+                                borderSide: const BorderSide(color: primaryColor, width: 2),
                               ),
                             ),
                           ),
-                          const SizedBox(height: 24), // space-y-6
+                          const SizedBox(height: 24),
 
                           // Password Label & Forgot
                           Row(
@@ -239,15 +235,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 child: Text(
                                   'Forgot password?',
                                   style: TextStyle(
-                                    fontSize: 12, // text-xs
-                                    fontWeight: FontWeight.w600, // font-semibold
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
                                     color: linkColor,
                                   ),
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 8), // mb-2
+                          const SizedBox(height: 8),
                           TextField(
                             controller: _passwordController,
                             obscureText: _obscurePassword,
@@ -280,7 +276,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(8),
-                                borderSide: BorderSide(color: primaryColor, width: 2),
+                                borderSide: const BorderSide(color: primaryColor, width: 2),
                               ),
                             ),
                           ),
@@ -300,16 +296,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                     });
                                   },
                                   activeColor: primaryColor,
-                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)), // rounded
-                                  side: BorderSide(color: borderColor), // border-slate-300
+                                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                  side: BorderSide(color: borderColor),
                                 ),
                               ),
-                              const SizedBox(width: 8), // ml-2
+                              const SizedBox(width: 8),
                               Expanded(
                                 child: Text(
                                   'Stay signed in for 30 days',
                                   style: TextStyle(
-                                    fontSize: 14, // text-sm
+                                    fontSize: 14,
                                     color: subtitleColor,
                                   ),
                                 ),
@@ -324,17 +320,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: primaryColor,
                               foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 14), // py-3.5
+                              padding: const EdgeInsets.symmetric(vertical: 14),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8), // rounded-lg
+                                borderRadius: BorderRadius.circular(8),
                               ),
-                              elevation: 1, // shadow-sm
+                              elevation: 1,
                             ),
                             child: const Text(
                               'Sign in to Dashboard',
                               style: TextStyle(
-                                fontSize: 14, // text-sm
-                                fontWeight: FontWeight.w600, // font-semibold
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),

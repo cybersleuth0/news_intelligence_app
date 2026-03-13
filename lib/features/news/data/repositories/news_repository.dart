@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import '../../../../core/errors/failures.dart';
 import '../models/article_model.dart';
 
 class NewsRepository {
@@ -11,7 +12,7 @@ class NewsRepository {
       final response = await _dio.get('top-headlines', queryParameters: {
         'country': 'us',
         if (category != null && category != 'All') 'category': category.toLowerCase(),
-        if (query != null) 'q': query,
+        'q': query,
         'page': page,
         'pageSize': 20,
       });
@@ -20,10 +21,13 @@ class NewsRepository {
         final newsData = NewsDataModel.fromJson(response.data);
         return newsData.articles;
       } else {
-        throw Exception('Failed to load news');
+        throw ServerFailure('Failed to load news: ${response.statusCode}');
       }
     } on DioException catch (e) {
-      throw Exception(e.message ?? 'An error occurred');
+      if (e.type == DioExceptionType.connectionError || e.type == DioExceptionType.unknown) {
+        throw NetworkFailure();
+      }
+      throw ServerFailure(e.message ?? 'An error occurred');
     }
   }
 
@@ -40,10 +44,13 @@ class NewsRepository {
         final newsData = NewsDataModel.fromJson(response.data);
         return newsData.articles;
       } else {
-        throw Exception('Failed to search articles');
+        throw ServerFailure('Failed to search articles: ${response.statusCode}');
       }
     } on DioException catch (e) {
-      throw Exception(e.message ?? 'An error occurred');
+      if (e.type == DioExceptionType.connectionError || e.type == DioExceptionType.unknown) {
+        throw NetworkFailure();
+      }
+      throw ServerFailure(e.message ?? 'An error occurred');
     }
   }
 }
