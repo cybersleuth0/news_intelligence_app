@@ -30,6 +30,21 @@
 
 ---
 
+## 📸 Visual Showcase
+
+<p align="center">
+  <img src="screenshots/splash.png" width="30%" />
+  <img src="screenshots/login.png" width="30%" />
+  <img src="screenshots/home.png" width="30%" />
+</p>
+<p align="center">
+  <img src="screenshots/search.png" width="30%" />
+  <img src="screenshots/detail.png" width="30%" />
+  <img src="screenshots/favorites.png" width="30%" />
+</p>
+
+---
+
 ## 🏗️ Technical Architecture
 
 ```mermaid

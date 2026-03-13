@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'core/utils/hive_helper.dart';
 
 import 'features/auth/presentation/screens/splash_screen.dart';
@@ -27,12 +28,14 @@ class NewsIntelligenceApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3713EC)),
         useMaterial3: true,
+        textTheme: GoogleFonts.interTextTheme(),
       ),
       darkTheme: ThemeData.dark().copyWith(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF3713EC),
           brightness: Brightness.dark,
         ),
+        textTheme: GoogleFonts.interTextTheme(ThemeData.dark().textTheme),
       ),
       home: const SplashScreen(),
     );
