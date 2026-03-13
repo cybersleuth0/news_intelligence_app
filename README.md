@@ -71,8 +71,8 @@ graph TD
 
 ### Quick Start
 ```bash
-# 1. Clone repository
-git clone https://github.com/cybersleuth0/NewsApp.git
+# 1. Clone repository[
+git clone https: https://github.com/cybersleuth0/news_intelligence_app.git
 
 # 2. Install dependencies
 flutter pub get
