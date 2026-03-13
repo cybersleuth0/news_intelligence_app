@@ -198,54 +198,59 @@ class FavoritesScreen extends ConsumerWidget {
   }
 
   Widget _buildEmptyState(BuildContext context, Color primaryColor, Color textColor, Color mutedTextColor) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Container(
-          width: 96,
-          height: 96,
-          decoration: BoxDecoration(
-            color: primaryColor.withValues(alpha: 0.1),
-            shape: BoxShape.circle,
-          ),
-          child: Icon(
-            Icons.bookmark,
-            size: 48,
-            color: primaryColor,
-          ),
-        ),
-        const SizedBox(height: 24),
-        Text(
-          'No saved articles yet',
-          style: TextStyle(
-            color: textColor,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          'Tap the bookmark icon on any article to save it for later.',
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            color: mutedTextColor,
-            fontSize: 14,
-          ),
-        ),
-        const SizedBox(height: 32),
-        ElevatedButton(
-          onPressed: () => Navigator.of(context).pop(),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: primaryColor,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            width: 96,
+            height: 96,
+            decoration: BoxDecoration(
+              color: primaryColor.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.bookmark,
+              size: 48,
+              color: primaryColor,
             ),
           ),
-          child: const Text('Explore News', style: TextStyle(fontWeight: FontWeight.bold)),
-        ),
-      ],
+          const SizedBox(height: 24),
+          Text(
+            'No saved articles yet',
+            style: TextStyle(
+              color: textColor,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 32.0),
+            child: Text(
+              'Tap the bookmark icon on any article to save it for later.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: mutedTextColor,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(height: 32),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: const Text('Explore News', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
     );
   }
 }
