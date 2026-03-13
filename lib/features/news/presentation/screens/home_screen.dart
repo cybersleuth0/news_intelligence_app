@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 import 'dart:ui';
 import '../../data/models/article_model.dart';
 import '../providers/news_provider.dart';
@@ -75,6 +76,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
             child: AppBar(
               backgroundColor: bgHeaderColor,
+              surfaceTintColor: Colors.transparent,
+              scrolledUnderElevation: 0,
               elevation: 0,
               centerTitle: false,
               bottom: PreferredSize(
@@ -238,12 +241,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     ),
                                     Row(
                                       children: [
-                                        Text(
-                                          article.author ?? 'Unknown',
-                                          style: TextStyle(
-                                            color: mutedTextColor,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w500,
+                                        Flexible(
+                                          child: Text(
+                                            article.author ?? 'Unknown',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              color: mutedTextColor,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w500,
+                                            ),
                                           ),
                                         ),
                                         if (article.publishedAt != null) ...[
@@ -278,7 +285,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     );
                   },
                 ),
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => ListView.builder(
+                  padding: const EdgeInsets.only(left: 16, right: 16, bottom: 20),
+                  itemCount: 5,
+                  itemBuilder: (context, index) => _buildShimmerLoading(isDark),
+                ),
                 error: (error, stack) => Center(child: Text('Error: $error')),
               ),
             ),
@@ -350,6 +361,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               );
             }
           },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildShimmerLoading(bool isDark) {
+    final baseColor = isDark ? const Color(0xFF1E293B) : Colors.grey[300]!;
+    final highlightColor = isDark ? const Color(0xFF334155) : Colors.grey[100]!;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Shimmer.fromColors(
+        baseColor: baseColor,
+        highlightColor: highlightColor,
+        child: Container(
+          padding: const EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.black.withValues(alpha: 0.2) : Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(width: 60, height: 10, color: Colors.white),
+                    const SizedBox(height: 8),
+                    Container(width: double.infinity, height: 14, color: Colors.white),
+                    const SizedBox(height: 4),
+                    Container(width: 150, height: 14, color: Colors.white),
+                    const SizedBox(height: 12),
+                    Container(width: 100, height: 10, color: Colors.white),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

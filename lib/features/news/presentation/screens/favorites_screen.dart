@@ -148,12 +148,16 @@ class FavoritesScreen extends ConsumerWidget {
                                       const SizedBox(height: 8),
                                       Row(
                                         children: [
-                                          Text(
-                                            article.author ?? 'Unknown',
-                                            style: TextStyle(
-                                              color: mutedTextColor,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w500,
+                                          Flexible(
+                                            child: Text(
+                                              article.author ?? 'Unknown',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: TextStyle(
+                                                color: mutedTextColor,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w500,
+                                              ),
                                             ),
                                           ),
                                           if (article.publishedAt != null) ...[

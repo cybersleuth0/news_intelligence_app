@@ -66,7 +66,7 @@ graph TD
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Flutter 3.0+
+- Flutter 3.8+
 - News API Key (from newsapi.org)
 
 ### Quick Start

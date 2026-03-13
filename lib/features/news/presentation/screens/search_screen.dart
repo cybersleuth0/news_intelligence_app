@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shimmer/shimmer.dart';
 import 'dart:ui';
 import '../providers/search_provider.dart';
 import 'article_detail_screen.dart';
@@ -11,24 +12,13 @@ class SearchScreen extends ConsumerStatefulWidget {
   ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends ConsumerState<SearchScreen> with SingleTickerProviderStateMixin {
+class _SearchScreenState extends ConsumerState<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  late AnimationController _shimmerController;
   bool _hasInput = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _shimmerController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1500),
-    )..repeat();
-  }
 
   @override
   void dispose() {
     _searchController.dispose();
-    _shimmerController.dispose();
     super.dispose();
   }
 
@@ -180,6 +170,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> with SingleTickerPr
   }
 
   Widget _buildLoadingState(Color shimmerBaseColor, Color primaryColor, Color mutedTextColor) {
+    final highlightColor = Theme.of(context).brightness == Brightness.dark 
+        ? const Color(0xFF334155) 
+        : Colors.grey[100]!;
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -200,23 +194,34 @@ class _SearchScreenState extends ConsumerState<SearchScreen> with SingleTickerPr
               itemCount: 5,
               itemBuilder: (context, index) => Padding(
                 padding: const EdgeInsets.only(bottom: 24.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildShimmerBlock(width: 96, height: 96, borderRadius: 8, baseColor: shimmerBaseColor, primaryColor: primaryColor),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const SizedBox(height: 8),
-                          _buildShimmerBlock(width: double.infinity, height: 16, borderRadius: 4, baseColor: shimmerBaseColor, primaryColor: primaryColor),
-                          const SizedBox(height: 8),
-                          _buildShimmerBlock(width: 150, height: 16, borderRadius: 4, baseColor: shimmerBaseColor, primaryColor: primaryColor),
-                        ],
+                child: Shimmer.fromColors(
+                  baseColor: shimmerBaseColor,
+                  highlightColor: highlightColor,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 96,
+                        height: 96,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 8),
+                            Container(width: double.infinity, height: 16, color: Colors.white),
+                            const SizedBox(height: 8),
+                            Container(width: 150, height: 16, color: Colors.white),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -418,38 +423,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> with SingleTickerPr
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildShimmerBlock({
-    required double width,
-    required double height,
-    required double borderRadius,
-    required Color baseColor,
-    required Color primaryColor,
-  }) {
-    return AnimatedBuilder(
-      animation: _shimmerController,
-      builder: (context, child) {
-        return Container(
-          width: width,
-          height: height,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(borderRadius),
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              stops: const [0.0, 0.5, 1.0],
-              colors: [
-                baseColor,
-                primaryColor.withValues(alpha: 0.1),
-                baseColor,
-              ],
-              transform: GradientRotation(_shimmerController.value * 2 * 3.14159),
-            ),
-          ),
-        );
-      },
     );
   }
 }
