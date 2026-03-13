@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>News Search</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3713ec",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#131022",
+                    },
+                    fontFamily: {
+                        "display": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .shimmer {
+            background: linear-gradient(90deg, transparent 25%, rgba(55, 19, 236, 0.1) 50%, transparent 75%);
+            background-size: 200% 100%;
+            animation: shimmer-anim 1.5s infinite;
+        }
+        @keyframes shimmer-anim {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex min-h-screen flex-col overflow-x-hidden">
+<!-- Header & Search Bar -->
+<header class="sticky top-0 z-10 border-b border-primary/10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-md px-4 py-3">
+<div class="flex items-center gap-3">
+<button class="flex h-10 w-10 items-center justify-center rounded-full hover:bg-primary/10 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">arrow_back</span>
+</button>
+<div class="flex flex-1 items-center gap-2 rounded-xl bg-slate-200/50 dark:bg-primary/10 px-4 py-2 border border-transparent focus-within:border-primary/50 transition-all">
+<span class="material-symbols-outlined text-slate-500 dark:text-primary">search</span>
+<input class="w-full border-none bg-transparent p-0 text-base focus:ring-0 placeholder:text-slate-500 dark:placeholder:text-slate-400" placeholder="Search for news, topics, or sources..." type="text"/>
+<button class="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 dark:bg-slate-700">
+<span class="material-symbols-outlined text-xs">close</span>
+</button>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 px-4 py-6">
+<!-- Empty State (Hidden by default in flow, but visible initially) -->
+<div class="flex flex-col items-center justify-center gap-6 py-12">
+<div class="relative flex h-48 w-48 items-center justify-center rounded-full bg-primary/5">
+<div class="absolute inset-0 animate-pulse rounded-full bg-primary/5"></div>
+<span class="material-symbols-outlined text-7xl text-primary/40">travel_explore</span>
+</div>
+<div class="text-center">
+<h2 class="text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Search for any topic</h2>
+<p class="mt-2 text-sm text-slate-500 dark:text-slate-400 max-w-[280px] mx-auto">Discover the latest stories from around the world instantly.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-2">
+<button class="rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary">#TechTrends</button>
+<button class="rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary">#GlobalPolitics</button>
+<button class="rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-xs font-semibold text-primary">#ClimateAction</button>
+</div>
+</div>
+<!-- Loading State (Shimmer) -->
+<div class="mt-8 space-y-6">
+<h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Recent Results</h3>
+<div class="flex flex-col gap-6">
+<!-- Shimmer Card -->
+<div class="flex gap-4">
+<div class="shimmer h-24 w-24 shrink-0 rounded-lg bg-slate-200 dark:bg-slate-800"></div>
+<div class="flex flex-1 flex-col justify-center gap-2">
+<div class="shimmer h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-800"></div>
+<div class="shimmer h-4 w-1/2 rounded bg-slate-200 dark:bg-slate-800"></div>
+<div class="shimmer mt-2 h-3 w-1/4 rounded bg-slate-200 dark:bg-slate-800"></div>
+</div>
+</div>
+<!-- Article Result Card -->
+<div class="flex gap-4 group cursor-pointer">
+<div class="h-24 w-24 shrink-0 overflow-hidden rounded-lg">
+<img class="h-full w-full object-cover transition-transform group-hover:scale-105" data-alt="Modern building reflection in city skyline" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr3AUjtMT86S757AzzWM3wiLdw2tN3WDwb1Q9SSza_pc8AlNG_cMdDM9TCkPKPoxgPw0Wf8Qi8g77T9CM5icHjJ0_u6lb-6CE9ozFo2jEF6ZXBJsCDwpOXLy3eWHcMfY2cda_44sVGlKQhfjA_mgGSa2kQpSRMrVLYfokorIIhci4pUXf3TT3qxJhHzEl6P1msIyEAIEXLrAnae83jEmSy6RxQkDxPqoND79KkeVP58U40LC1xhnBo5lJvb5df1tZzNxTLwfTNeQUo"/>
+</div>
+<div class="flex flex-1 flex-col justify-center">
+<div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary">
+<span>Tech</span>
+<span class="h-1 w-1 rounded-full bg-slate-400"></span>
+<span class="text-slate-500">5m ago</span>
+</div>
+<h4 class="mt-1 line-clamp-2 text-base font-bold leading-tight text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">
+                                Quantum Computing Breakthrough: Researchers Achieve Stable Qubit State at Room Temp
+                            </h4>
+<p class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">newspaper</span>
+                                Global Science Daily
+                            </p>
+</div>
+</div>
+<!-- Article Result Card 2 -->
+<div class="flex gap-4 group cursor-pointer">
+<div class="h-24 w-24 shrink-0 overflow-hidden rounded-lg">
+<img class="h-full w-full object-cover transition-transform group-hover:scale-105" data-alt="Digital representation of global communication networks" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBkavcLn5riwDYx-TTtXT3zWDXbyftXwqfFCZYgsI1kf2_5kKFMrddu69DhsRwrie2rIQmpDTktOp6WCssFTNkuU7LcKTxOEofpQzyIVCzq09sZb5binzD5NYcml5l4GYm9w5BboCMclLJTWLFVZonbjwBgHIhIP1eJEUwX33VrHbHoVTGI4MMZniIfaO67v_fi_DCVpoe18bdMCdatLvAi_u2BiI4S5FxLg3r71kMIkXlUIQsl_xWXmK0CLDJIKacL8vDAYZrT-krY"/>
+</div>
+<div class="flex flex-1 flex-col justify-center">
+<div class="flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-primary">
+<span>World</span>
+<span class="h-1 w-1 rounded-full bg-slate-400"></span>
+<span class="text-slate-500">2h ago</span>
+</div>
+<h4 class="mt-1 line-clamp-2 text-base font-bold leading-tight text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">
+                                New International Space Treaty Signed by 45 Nations to Regulate Lunar Mining
+                            </h4>
+<p class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400 flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">public</span>
+                                World Report Online
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="sticky bottom-0 border-t border-primary/10 bg-background-light dark:bg-background-dark/95 backdrop-blur-md px-4 pb-6 pt-2">
+<div class="flex items-center justify-around">
+<a class="flex flex-col items-center gap-1 text-slate-400 transition-colors hover:text-primary" href="#">
+<span class="material-symbols-outlined">home</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Home</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined fill-[1]">search</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Search</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 transition-colors hover:text-primary" href="#">
+<span class="material-symbols-outlined">bookmark</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Saved</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 transition-colors hover:text-primary" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="text-[10px] font-bold uppercase tracking-tighter">Profile</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>
