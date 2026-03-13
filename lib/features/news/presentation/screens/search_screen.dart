@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'dart:ui';
+import '../providers/search_provider.dart';
+import 'article_detail_screen.dart';
 
-class SearchScreen extends StatefulWidget {
+class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
 
   @override
-  State<SearchScreen> createState() => _SearchScreenState();
+  ConsumerState<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderStateMixin {
+class _SearchScreenState extends ConsumerState<SearchScreen> with SingleTickerProviderStateMixin {
   final TextEditingController _searchController = TextEditingController();
   late AnimationController _shimmerController;
-  bool _isSearching = false;
+  bool _hasInput = false;
 
   @override
   void initState() {
@@ -31,6 +34,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    final searchAsync = ref.watch(searchProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     // Stitch Colors (From HTML Tailwind config)
@@ -73,14 +77,14 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                             color: isDark ? primaryColor.withValues(alpha: 0.1) : const Color(0xFFE2E8F0).withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: _isSearching ? primaryColor.withValues(alpha: 0.5) : Colors.transparent,
+                              color: _hasInput ? primaryColor.withValues(alpha: 0.5) : Colors.transparent,
                             ),
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Row(
                             children: [
                               Icon(Icons.search,
-                                  color: _isSearching ? primaryColor : mutedTextColor, size: 20),
+                                  color: _hasInput ? primaryColor : mutedTextColor, size: 20),
                               const SizedBox(width: 8),
                               Expanded(
                                 child: TextField(
@@ -93,20 +97,24 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                                     isDense: true,
                                     contentPadding: EdgeInsets.zero,
                                   ),
+                                  onSubmitted: (val) {
+                                    ref.read(searchProvider.notifier).search(val);
+                                  },
                                   onChanged: (val) {
                                     setState(() {
-                                      _isSearching = val.isNotEmpty;
+                                      _hasInput = val.isNotEmpty;
                                     });
                                   },
                                 ),
                               ),
-                              if (_isSearching || true) // Always show like HTML mockup for perfection, or conditional? The HTML mockup shows it. 
+                              if (_hasInput)
                                 GestureDetector(
                                   onTap: () {
                                     _searchController.clear();
                                     setState(() {
-                                      _isSearching = false;
+                                      _hasInput = false;
                                     });
+                                    ref.read(searchProvider.notifier).search('');
                                   },
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
@@ -129,98 +137,56 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildEmptyState(isDark, primaryColor, textColor, mutedTextColor),
-            _buildSearchResults(isDark, primaryColor, textColor, mutedTextColor, shimmerBaseColor),
-          ],
-        ),
+      body: searchAsync.when(
+        data: (articles) {
+          if (articles.isEmpty) {
+            return _buildEmptyState(isDark, primaryColor, textColor, mutedTextColor);
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: articles.length,
+            itemBuilder: (context, index) {
+              final article = articles[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 24.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => ArticleDetailScreen(article: article),
+                      ),
+                    );
+                  },
+                  child: _buildResultCard(
+                    isDark: isDark,
+                    primaryColor: primaryColor,
+                    textColor: textColor,
+                    mutedTextColor: mutedTextColor,
+                    imageUrl: article.urlToImage,
+                    category: article.source.name ?? 'News',
+                    title: article.title ?? 'No Title',
+                    source: article.author ?? 'Unknown',
+                    timeAgo: article.publishedAt != null ? article.publishedAt!.substring(0, 10) : '',
+                  ),
+                ),
+              );
+            },
+          );
+        },
+        loading: () => _buildLoadingState(shimmerBaseColor, primaryColor, mutedTextColor),
+        error: (err, stack) => Center(child: Text('Error: $err', style: TextStyle(color: textColor))),
       ),
     );
   }
 
-  Widget _buildEmptyState(bool isDark, Color primaryColor, Color textColor, Color mutedTextColor) {
+  Widget _buildLoadingState(Color shimmerBaseColor, Color primaryColor, Color mutedTextColor) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 192,
-            height: 192,
-            decoration: BoxDecoration(
-              color: primaryColor.withValues(alpha: 0.05),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.travel_explore,
-              size: 72,
-              color: primaryColor.withValues(alpha: 0.4),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'Search for any topic',
-            style: TextStyle(
-              color: textColor,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -0.5,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Discover the latest stories from around the world instantly.',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              color: mutedTextColor,
-              fontSize: 14,
-            ),
-          ),
-          const SizedBox(height: 24),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            alignment: WrapAlignment.center,
-            children: [
-              _buildSuggestionChip('#TechTrends', primaryColor),
-              _buildSuggestionChip('#GlobalPolitics', primaryColor),
-              _buildSuggestionChip('#ClimateAction', primaryColor),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSuggestionChip(String label, Color primaryColor) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: primaryColor.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          color: primaryColor,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSearchResults(bool isDark, Color primaryColor, Color textColor, Color mutedTextColor, Color shimmerBaseColor) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      padding: const EdgeInsets.all(16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'RECENT RESULTS',
+            'SEARCHING...',
             style: TextStyle(
               color: mutedTextColor,
               fontSize: 12,
@@ -229,59 +195,115 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
             ),
           ),
           const SizedBox(height: 24),
-          
-          // Shimmer Card Example
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildShimmerBlock(width: 96, height: 96, borderRadius: 8, baseColor: shimmerBaseColor, primaryColor: primaryColor),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
+          Expanded(
+            child: ListView.builder(
+              itemCount: 5,
+              itemBuilder: (context, index) => Padding(
+                padding: const EdgeInsets.only(bottom: 24.0),
+                child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const SizedBox(height: 8),
-                    _buildShimmerBlock(width: double.infinity, height: 16, borderRadius: 4, baseColor: shimmerBaseColor, primaryColor: primaryColor),
-                    const SizedBox(height: 8),
-                    _buildShimmerBlock(width: 150, height: 16, borderRadius: 4, baseColor: shimmerBaseColor, primaryColor: primaryColor),
-                    const SizedBox(height: 12),
-                    _buildShimmerBlock(width: 80, height: 12, borderRadius: 4, baseColor: shimmerBaseColor, primaryColor: primaryColor),
+                    _buildShimmerBlock(width: 96, height: 96, borderRadius: 8, baseColor: shimmerBaseColor, primaryColor: primaryColor),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 8),
+                          _buildShimmerBlock(width: double.infinity, height: 16, borderRadius: 4, baseColor: shimmerBaseColor, primaryColor: primaryColor),
+                          const SizedBox(height: 8),
+                          _buildShimmerBlock(width: 150, height: 16, borderRadius: 4, baseColor: shimmerBaseColor, primaryColor: primaryColor),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-            ],
+            ),
           ),
-          const SizedBox(height: 24),
-          
-          // Loaded Article Card 1
-          _buildResultCard(
-            isDark: isDark,
-            primaryColor: primaryColor,
-            textColor: textColor,
-            mutedTextColor: mutedTextColor,
-            imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDr3AUjtMT86S757AzzWM3wiLdw2tN3WDwb1Q9SSza_pc8AlNG_cMdDM9TCkPKPoxgPw0Wf8Qi8g77T9CM5icHjJ0_u6lb-6CE9ozFo2jEF6ZXBJsCDwpOXLy3eWHcMfY2cda_44sVGlKQhfjA_mgGSa2kQpSRMrVLYfokorIIhci4pUXf3TT3qxJhHzEl6P1msIyEAIEXLrAnae83jEmSy6RxQkDxPqoND79KkeVP58U40LC1xhnBo5lJvb5df1tZzNxTLwfTNeQUo',
-            category: 'Tech',
-            title: 'Quantum Computing Breakthrough: Researchers Achieve Stable Qubit State at Room Temp',
-            source: 'Global Science Daily',
-            timeAgo: '5m ago',
-          ),
-          const SizedBox(height: 24),
-          
-          // Loaded Article Card 2
-          _buildResultCard(
-            isDark: isDark,
-            primaryColor: primaryColor,
-            textColor: textColor,
-            mutedTextColor: mutedTextColor,
-            imageUrl: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBkavcLn5riwDYx-TTtXT3zWDXbyftXwqfFCZYgsI1kf2_5kKFMrddu69DhsRwrie2rIQmpDTktOp6WCssFTNkuU7LcKTxOEofpQzyIVCzq09sZb5binzD5NYcml5l4GYm9w5BboCMclLJTWLFVZonbjwBgHIhIP1eJEUwX33VrHbHoVTGI4MMZniIfaO67v_fi_DCVpoe18bdMCdatLvAi_u2BiI4S5FxLg3r71kMIkXlUIQsl_xWXmK0CLDJIKacL8vDAYZrT-krY',
-            category: 'World',
-            title: 'New International Space Treaty Signed by 45 Nations to Regulate Lunar Mining',
-            source: 'World Report Online',
-            timeAgo: '2h ago',
-          ),
-          const SizedBox(height: 24),
         ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(bool isDark, Color primaryColor, Color textColor, Color mutedTextColor) {
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 48.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              width: 192,
+              height: 192,
+              decoration: BoxDecoration(
+                color: primaryColor.withValues(alpha: 0.05),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.travel_explore,
+                size: 72,
+                color: primaryColor.withValues(alpha: 0.4),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Text(
+              'Search for any topic',
+              style: TextStyle(
+                color: textColor,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: -0.5,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'Discover the latest stories from around the world instantly.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: mutedTextColor,
+                fontSize: 14,
+              ),
+            ),
+            const SizedBox(height: 24),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              alignment: WrapAlignment.center,
+              children: [
+                _buildSuggestionChip('#TechTrends', primaryColor),
+                _buildSuggestionChip('#GlobalPolitics', primaryColor),
+                _buildSuggestionChip('#ClimateAction', primaryColor),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionChip(String label, Color primaryColor) {
+    return GestureDetector(
+      onTap: () {
+        _searchController.text = label.replaceAll('#', '');
+        setState(() => _hasInput = true);
+        ref.read(searchProvider.notifier).search(_searchController.text);
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: primaryColor.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: primaryColor.withValues(alpha: 0.2)),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: primaryColor,
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }
@@ -291,7 +313,7 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
     required Color primaryColor,
     required Color textColor,
     required Color mutedTextColor,
-    required String imageUrl,
+    required String? imageUrl,
     required String category,
     required String title,
     required String source,
@@ -302,18 +324,25 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: Image.network(
-            imageUrl,
-            width: 96,
-            height: 96,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) => Container(
-              width: 96,
-              height: 96,
-              color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
-              child: const Icon(Icons.broken_image, color: Colors.grey),
-            ),
-          ),
+          child: imageUrl != null 
+            ? Image.network(
+                imageUrl,
+                width: 96,
+                height: 96,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) => Container(
+                  width: 96,
+                  height: 96,
+                  color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                  child: const Icon(Icons.broken_image, color: Colors.grey),
+                ),
+              )
+            : Container(
+                width: 96,
+                height: 96,
+                color: isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0),
+                child: const Icon(Icons.newspaper, color: Colors.grey),
+              ),
         ),
         const SizedBox(width: 16),
         Expanded(
@@ -331,25 +360,27 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                       letterSpacing: 1.0,
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Container(
-                      width: 4,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: mutedTextColor,
-                        shape: BoxShape.circle,
+                  if (timeAgo.isNotEmpty) ...[
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      child: Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: mutedTextColor,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
-                  ),
-                  Text(
-                    timeAgo,
-                    style: TextStyle(
-                      color: mutedTextColor,
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
+                    Text(
+                      timeAgo,
+                      style: TextStyle(
+                        color: mutedTextColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
-                  ),
+                  ],
                 ],
               ),
               const SizedBox(height: 4),
@@ -369,12 +400,16 @@ class _SearchScreenState extends State<SearchScreen> with SingleTickerProviderSt
                 children: [
                   Icon(Icons.newspaper, size: 14, color: mutedTextColor),
                   const SizedBox(width: 4),
-                  Text(
-                    source,
-                    style: TextStyle(
-                      color: mutedTextColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
+                  Expanded(
+                    child: Text(
+                      source,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: mutedTextColor,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                   ),
                 ],
