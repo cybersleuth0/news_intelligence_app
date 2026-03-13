@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../../news/presentation/screens/home_screen.dart';
 
@@ -32,15 +33,21 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    // Stitch Colors
-    const primaryColor = Color(0xFF3713EC);
+    // Stitch Colors (From HTML Tailwind config)
+    const primaryColor = Color(0xFF3713EC); 
     final bgColor = isDark ? const Color(0xFF131022) : const Color(0xFFF6F6F8);
-    final cardBgColor = isDark ? const Color(0xFF0F172A).withOpacity(0.5) : Colors.white;
-    final borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0);
-    final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A);
-    final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569);
-    final inputBgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC);
+    final cardBgColor = isDark ? const Color(0xFF0F172A).withValues(alpha: 0.5) : Colors.white; // dark:bg-slate-900/50
+    final borderColor = isDark ? const Color(0xFF1E293B) : const Color(0xFFE2E8F0); // dark:border-slate-800
+    final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A); // dark:text-slate-100
+    final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF475569); // dark:text-slate-400
+    final inputBgColor = isDark ? const Color(0xFF0F172A) : const Color(0xFFF8FAFC); // dark:bg-slate-900
     final linkColor = isDark ? primaryColor : primaryColor;
+    
+    // Abstract Background Colors (From HTML abstract background pattern)
+    // <div class="absolute top-[-10%] ... bg-primary/20 blur-[120px] rounded-full"></div>
+    final blob1Color = primaryColor.withValues(alpha: 0.2); 
+    // <div class="absolute bottom-[-10%] ... bg-primary/10 blur-[120px] rounded-full"></div>
+    final blob2Color = primaryColor.withValues(alpha: 0.1); 
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -48,34 +55,32 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Abstract Background Pattern Component
           Positioned(
-            top: -50,
-            left: -50,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.4,
-              height: MediaQuery.of(context).size.width * 0.4,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryColor.withOpacity(isDark ? 0.4 : 0.2),
-              ),
-              child: BackdropFilter(
-                filter: ColorFilter.mode(Colors.transparent, BlendMode.multiply),
-                child: Container(),
+            top: -MediaQuery.of(context).size.height * 0.1,
+            left: -MediaQuery.of(context).size.width * 0.1,
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.4,
+                height: MediaQuery.of(context).size.height * 0.4,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: blob1Color,
+                ),
               ),
             ),
           ),
           Positioned(
-            bottom: -50,
-            right: -50,
-            child: Container(
-              width: MediaQuery.of(context).size.width * 0.4,
-              height: MediaQuery.of(context).size.width * 0.4,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryColor.withOpacity(isDark ? 0.2 : 0.1),
-              ),
-              child: BackdropFilter(
-                filter: ColorFilter.mode(Colors.transparent, BlendMode.multiply),
-                child: Container(),
+            bottom: -MediaQuery.of(context).size.height * 0.1,
+            right: -MediaQuery.of(context).size.width * 0.1,
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 120, sigmaY: 120),
+              child: Container(
+                width: MediaQuery.of(context).size.width * 0.4,
+                height: MediaQuery.of(context).size.height * 0.4,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: blob2Color,
+                ),
               ),
             ),
           ),
@@ -90,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 gradient: LinearGradient(
                   colors: [
                     Colors.transparent,
-                    primaryColor.withOpacity(0.5),
+                    primaryColor.withValues(alpha: 0.5),
                     Colors.transparent,
                   ],
                 ),
@@ -113,7 +118,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           width: 64,
                           height: 64,
                           decoration: BoxDecoration(
-                            color: primaryColor.withOpacity(0.2),
+                            color: primaryColor.withValues(alpha: 0.2),
                             borderRadius: BorderRadius.circular(12), // rounded-xl
                           ),
                           child: const Center(
@@ -156,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         border: Border.all(color: borderColor),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
+                            color: Colors.black.withValues(alpha: 0.05),
                             blurRadius: 20, // shadow-xl approx
                             offset: const Offset(0, 10),
                           ),

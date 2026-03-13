@@ -1,3 +1,4 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
 
 import 'login_screen.dart';
@@ -41,11 +42,15 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    // Stitch Colors
-    const primaryColor = Color(0xFF3713EC);
+    // Stitch Colors (From HTML Tailwind config)
+    const primaryColor = Color(0xFF3713EC); 
     final bgColor = isDark ? const Color(0xFF131022) : const Color(0xFFF6F6F8);
     final textColor = isDark ? const Color(0xFFF1F5F9) : const Color(0xFF0F172A);
     final subtitleColor = isDark ? const Color(0xFF94A3B8) : const Color(0xFF64748B);
+    
+    // Abstract Background Colors (From HTML abstract background pattern)
+    final blob1Color = primaryColor.withValues(alpha: 0.05);
+    final blob2Color = primaryColor.withValues(alpha: 0.1);
 
     return Scaffold(
       backgroundColor: bgColor,
@@ -55,17 +60,15 @@ class _SplashScreenState extends State<SplashScreen>
           Positioned(
             top: -100,
             left: -100,
-            child: Container(
-              width: 256,
-              height: 256,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryColor.withOpacity(0.05),
-              ),
-              child: BackdropFilter(
-                filter: ColorFilter.mode(
-                    Colors.transparent, BlendMode.multiply), // Simulation of blur
-                child: Container(),
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(
+                width: 256,
+                height: 256,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: blob1Color,
+                ),
               ),
             ),
           ),
@@ -73,17 +76,15 @@ class _SplashScreenState extends State<SplashScreen>
           Positioned(
             bottom: -100,
             right: -100,
-            child: Container(
-              width: 256,
-              height: 256,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: primaryColor.withOpacity(0.1),
-              ),
-              child: BackdropFilter(
-                filter: ColorFilter.mode(
-                    Colors.transparent, BlendMode.multiply),
-                child: Container(),
+            child: ImageFiltered(
+              imageFilter: ImageFilter.blur(sigmaX: 80, sigmaY: 80),
+              child: Container(
+                width: 256,
+                height: 256,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: blob2Color,
+                ),
               ),
             ),
           ),
@@ -97,10 +98,10 @@ class _SplashScreenState extends State<SplashScreen>
                   width: 96,
                   height: 96,
                   decoration: BoxDecoration(
-                    color: primaryColor.withOpacity(0.1),
+                    color: primaryColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: primaryColor.withOpacity(0.2),
+                      color: primaryColor.withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),

@@ -23,9 +23,16 @@ class NewsIntelligenceApp extends StatelessWidget {
     return MaterialApp(
       title: 'News Intelligence',
       debugShowCheckedModeBanner: false,
+      themeMode: ThemeMode.dark,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF3713EC)),
         useMaterial3: true,
+      ),
+      darkTheme: ThemeData.dark().copyWith(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF3713EC),
+          brightness: Brightness.dark,
+        ),
       ),
       home: const SplashScreen(),
     );
