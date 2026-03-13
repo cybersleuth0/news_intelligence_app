@@ -35,7 +35,7 @@
 ```mermaid
 graph TD
     A[Presentation Layer] -->|Ref / Watch| B[Riverpod Layer]
-    B -->|States (AsyncValue)| A
+    B -->|"States (AsyncValue)"| A
     B -->|Repository Calls| D[Data Layer]
     D -->|Network Client| E[Dio / News API]
     D -->|Local Persistence| F[Hive Database]
